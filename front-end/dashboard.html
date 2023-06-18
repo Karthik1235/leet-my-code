@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard Page</title>
+  <style>
+    body {
+      background-color: black;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      margin: 0 auto;
+      max-width: 400px;
+      padding: 20px;
+      text-align: center;
+      background-color: rgba(0, 0, 0, 0.8);
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    }
+
+    h1,
+    #topic-info {
+      margin-bottom: 20px;
+      color: #39ff14;
+    }
+
+    .username {
+      margin-bottom: 20px;
+      color: white;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .progress-container {
+      width: 200px;
+      height: 200px;
+      position: relative;
+      margin: 0 auto;
+      margin-bottom: 40px;
+      border-radius: 50%;
+      overflow: hidden;
+    }
+
+    .progress-bg {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+    }
+
+    .progress-fill {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      background-color: #39ff14;
+      border-radius: 50%;
+      transform-origin: center;
+      transform: rotate(0deg);
+    }
+
+    .progress-value {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      background-color: rgba(0, 0, 0, 0.8);
+      border-radius: 50%;
+      clip-path: polygon(50% 0%, 100% 0%, 100% 100%);
+    }
+
+    .status-number {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .additional-content {
+      margin-top: 40px;
+      color: white;
+      font-size: 18px;
+    }
+
+    .topic-select {
+      margin-top: 20px;
+      width: 100%;
+      padding: 10px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 5px;
+      color: white;
+      font-size: 16px;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+    }
+
+    .topic-select:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px #39ff14;
+    }
+
+    .topic-select option {
+      background-color: rgba(0, 0, 0, 0.8);
+      color: white;
+    }
+
+    .topic-info {
+      margin-top: 20px;
+      display: none;
+      color: white;
+      font-size: 18px;
+    }
+
+    .topic-info.show {
+      display: block;
+    }
+
+    .guide-button {
+      margin-top: 20px;
+      background-color: #39ff14;
+      color: black;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .problem-table {
+      margin-top: 40px;
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .problem-table th,
+    .problem-table td {
+      padding: 10px;
+      border: 1px solid white;
+      color: white;
+    }
+
+    .problem-table th {
+      background-color: rgba(0, 0, 0, 0.8);
+      font-weight: bold;
+    }
+
+    .problem-table td {
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .loader {
+      position: relative;
+      top: 50%;
+      left: 35%;
+      width: 80px;
+      height: 80px;
+
+    }
+
+    .circle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border: 4px solid #39FF14; /* Neon green color */
+      border-top-color: transparent;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1.2s linear infinite;
+    }
+
+    .triangle {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-bottom: 14px solid #39FF14; /* Neon green color */
+      transform: translate(-50%, -50%) rotate(45deg);
+      animation: pulse 1.2s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      0%, 50% { transform: translate(-50%, -50%) scale(0.8); }
+      100% { transform: translate(-50%, -50%) scale(1); }
+    }
+
+    #report {
+      width: 800px;
+      margin-left: -200px;
+    }
+
+    #recommendations {
+      color: #35e50d;
+    }
+
+
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1 id="main-head"></h1>
+  <div class="progress-container">
+    <div class="progress-bg"></div>
+    <div class="progress-fill"></div>
+    <div class="progress-value"></div>
+    <div class="status-number">75%</div>
+  </div>
+  <div class="additional-content" id="expl"></div>
+  <select class="topic-select" id="topic-select" onchange="showTopicInfo(this)">
+  </select>
+  <div class="topic-info" id="topic-info"></div>
+  <div class="topic-info show" id="recommendations"></div>
+  </div>
+<script>
+  const storedData = localStorage.getItem('userData');
+  const [user_name, num_solved, num_total] = JSON.parse(storedData);
+  document.getElementById("main-head").innerText = "Welcome "+ user_name
+  document.getElementById("expl").innerText = "You have solved "+ num_solved.toString() + " out of " + num_total.toString();
+  const topics = [
+    'Array',
+    'String',
+    'Hash Table',
+    'Math',
+    'Dynamic Programming',
+    'Sorting',
+    'Greedy',
+    'Depth-First Search',
+    'Binary Search',
+    'Database',
+    'Breadth-First Search',
+    'Tree',
+    'Matrix',
+    'Two Pointers',
+    'Binary Tree',
+    'Bit Manipulation',
+    'Heap (Priority Queue)',
+    'Stack',
+    'Graph',
+    'Prefix Sum',
+    'Design',
+    'Simulation',
+    'Counting',
+    'Backtracking',
+    'Sliding Window',
+    'Union Find',
+    'Linked List',
+    'Ordered Set',
+    'Monotonic Stack',
+    'Enumeration',
+    'Recursion',
+    'Trie',
+    'Divide and Conquer',
+    'Binary Search Tree',
+    'Bitmask',
+    'Queue',
+    'Number Theory',
+    'Segment Tree',
+    'Memoization',
+    'Geometry',
+    'Topological Sort',
+    'Binary Indexed Tree',
+    'Hash Function',
+    'Game Theory',
+    'Shortest Path',
+    'Combinatorics',
+    'Data Stream',
+    'Interactive',
+    'String Matching',
+    'Rolling Hash',
+    'Brainteaser',
+    'Randomized',
+    'Monotonic Queue',
+    'Merge Sort',
+    'Iterator',
+    'Concurrency',
+    'Doubly-Linked List',
+    'Probability and Statistics',
+    'Quickselect',
+    'Bucket Sort',
+    'Suffix Array',
+    'Minimum Spanning Tree',
+    'Counting Sort',
+    'Shell',
+    'Line Sweep',
+    'Reservoir Sampling',
+    'Eulerian Circuit',
+    'Radix Sort',
+    'Strongly Connected Component',
+    'Rejection Sampling',
+    'Biconnected Component'
+  ]
+
+  const getRecommendations = () => {
+    document.getElementById("recommendations").innerHTML = '<div class="loader">\n'
+                                                      + '  <div class="circle"></div>\n'
+                                                      + '</div>'
+                                                      + '  <div>Please wait. Fetching questions for you!</div>\n'
+      const requestBody = {
+        user_name: user_name,
+        topic: document.getElementById("topic-select").value,
+      }
+      // Make the HTTP POST request to the login API endpoint
+      fetch('http://localhost:8000/recommendations/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+      })
+              .then(response => {
+                // Handle the response from the server
+                if (response.ok) {
+                  // Login successful
+                  console.log('Fetch successful');
+                  // Redirect to another page or perform any other action
+
+                  response.text().then((data) => {
+                      document.getElementById("recommendations").innerHTML = data
+                  })
+                }else {
+                  // Login failed
+                  console.log('Login failed!');
+                  // Handle the failed login attempt
+                  alert('Login Failed!')
+                }
+              })
+              .catch(error => {
+                // Handle any network or request errors
+                console.error('Error:', error);
+              });
+  }
+  const selectElement = document.getElementById('topic-select');
+  const optionElement = document.createElement('option');
+  optionElement.textContent = "Select a topic";
+  optionElement.value = "";
+  selectElement.appendChild(optionElement);
+  // Iterate over the strings array and create options
+  topics.forEach((string) => {
+    const optionElement = document.createElement('option');
+    optionElement.textContent = string;
+    optionElement.value = string;
+    selectElement.appendChild(optionElement);
+  });
+
+  function showTopicInfo(select) {
+    var topicInfo = document.getElementById("topic-info");
+    if (select.value !== "") {
+      document.getElementById("topic-info").innerHTML = '<div class="loader">\n'
+                                                    + '  <div class="circle"></div>\n'
+                                                    + '</div>'
+                                                    + '  <div>Please wait. Fetching a detailed report</div>\n'
+
+      const requestBody = {
+        user_name: user_name,
+        topic: document.getElementById("topic-select").value,
+      }
+      // Make the HTTP POST request to the login API endpoint
+      fetch('http://localhost:8000/report/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+      })
+              .then(response => {
+                // Handle the response from the server
+                if (response.ok) {
+                  // Login successful
+                  console.log('Fetch successful');
+                  // Redirect to another page or perform any other action
+                  response.text().then((data) => {
+                    console.log(data)
+                    document.getElementById("topic-info").innerHTML = '<div>' +
+                                                                      '<div id="report">' + data + '</div> \n' +
+                                                                      '<button class="guide-button" onclick="getRecommendations()" id="guide">Guide me</button>  \n' +
+                                                                      '</div>'
+                    document.getElementById("guide").classList.add("show");
+                  })
+                } else {
+                  // Login failed
+                  console.log('Login failed!');
+                  // Handle the failed login attempt
+                  alert('Login Failed!')
+                }
+              })
+              .catch(error => {
+                // Handle any network or request errors
+                console.error('Error:', error);
+              });
+      topicInfo.classList.add("show");
+    } else {
+      topicInfo.classList.remove("show");
+    }
+  }
+
+
+  var progressFill = document.querySelector(".progress-fill");
+  var progressValue = document.querySelector(".progress-value");
+  var statusNumber = document.querySelector(".status-number");
+
+  var angle = (num_solved / num_total) * 360;
+  progressFill.style.transform = "rotate(" + angle + "deg)";
+  progressValue.style.transform = "rotate(" + (angle + 180) + "deg)";
+  statusNumber.textContent = (num_solved * 100/num_total).toFixed(2).toString() + "%";
+</script>
+</body>
+</html>
