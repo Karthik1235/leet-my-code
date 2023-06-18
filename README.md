@@ -1,4 +1,6 @@
 # leet-my-code
+
+## Tech Stack: OpenAI (GPT-4), JavaScript, FastAPI and MongoDB
 Problem Statement:
 In the field of computer programming, solving coding problems is an essential skill for developers to improve their problem-solving abilities and expand their knowledge. However, many users face challenges in organizing their problem-solving journey and determining the optimal order in which to solve the remaining problems in a specific category.
 Our project aims to address this problem by developing a solution that takes in a user's solved and unsolved problem list within a certain category of problems and provides them with an overall score and a suggested order in which to tackle the remaining problems. The overall score will be calculated based on the user's performance in solving the problems, considering factors such as completion time, accuracy, and complexity of the solutions.
